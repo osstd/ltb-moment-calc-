@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="ltb.jpg" type="image/x-icon" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>LTB Moment</title>
+  </head>
+  <body>
+    <div class="main-container">
+      <div class="main-heading">
+        <h1 id="popup">
+          LTB Moment<img src="ltb.jpg" />
+        </h1>
+      </div>
+      <div class="grid-container">
+        <div class="member-container grid-item">
+          <div class="section-designation">
+            <h2>Section Designation</h2>
+            <div class="unit-system">
+              <label
+                ><input
+                  id="metric"
+                  type="radio"
+                  name="unit"
+                  value="metric"
+                  checked
+                />
+                Metric</label
+              >
+              <label
+                ><input
+                  id="imperial"
+                  type="radio"
+                  name="unit"
+                  value="imperial"
+                />
+                Imperial</label
+              >
+              <div class="shape-section">
+                <span>Shape: W - Wide Flange</span>
+                <div id="inputs-container"></div>
+              </div>
+            </div>
+          </div>
+          <div class="bending-axis">
+            <label
+              ><input
+                id="strong-bending"
+                type="radio"
+                name="bending-axis"
+                value="strong-axis"
+                checked
+              />
+              Strong axis</label
+            >
+            <label
+              ><input
+                id="weak-bending"
+                type="radio"
+                name="bending-axis"
+                value="weak-axis"
+              />
+              Weak axis</label
+            >
+          </div>
+          <div class="moment-resistance-input">
+            <div>
+              <h3>Factored Moment Resistance</h3>
+              <div>
+                <span
+                  >M<sub>r</sub>
+                  <input
+                    type="number"
+                    id="moment-resistance-input"
+                    value="100"
+                  />
+                  kN.m</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="yield-strength-input">
+            <div>
+              <h3>Yield Strength</h3>
+              <div>
+                <span
+                  >F<sub>y</sub>
+                  <input type="number" id="yield-strength-input" value="345" />
+                  MPa</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="properties-container grid-item">
+          <div class="heading">
+            <h2>Properties</h2>
+          </div>
+          <div class="section-properties">
+            <div id="Dsg"></div>
+            <div id="shape"><span>Shape: Wide-Flange</span></div>
+            <div id="Ds_i"></div>
+          </div>
+          <div class="properties">
+            <h3>Properties:</h3>
+            <div class="properties-grid-container">
+              <div id="Ix" class="properties-grid-item">
+                <span>I<sub>x</sub></span> =
+              </div>
+              <div id="Iy" class="properties-grid-item">
+                <span>I<sub>y</sub> =</span>
+              </div>
+              <div id="J" class="properties-grid-item"><span>J =</span></div>
+              <div id="Cw" class="properties-grid-item">
+                <span>C<sub>w</sub> =</span>
+              </div>
+              <div id="Zx" class="properties-grid-item">
+                <span>Z<sub>x</sub> =</span>
+              </div>
+              <div id="Sx" class="properties-grid-item">
+                <span>S<sub>x</sub> =</span>
+              </div>
+              <div id="Zy" class="properties-grid-item">
+                <span>Z<sub>y</sub> =</span>
+              </div>
+              <div id="Sy" class="properties-grid-item">
+                <span>S<sub>y</sub> =</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="moment-container grid-item">
+          <div class="section-heading">
+            <h2>ω<sub>2</sub></h2>
+          </div>
+          <div>
+            <span
+              >L<sub>ub</sub>
+              <input type="number" id="unbraced-length-input" value="1500" />
+              mm</span
+            >
+          </div>
+          <div>
+            <span
+              >M<sub>f-max</sub>
+              <input type="number" id="max-factored-moment" value="150" />
+              kN.m</span
+            >
+          </div>
+          <div class="omega-moment-container omega-grid-container">
+            <div id="blank" class="omega-grid-item"></div>
+            <div class="omega-grid-item"><span>1/4 point</span></div>
+            <div class="omega-grid-item"><span>1/2 point</span></div>
+            <div class="omega-grid-item"><span>3/4 point</span></div>
+            <div class="omega-grid-item"><span>Location (mm)</span></div>
+            <div class="omega-grid-item">
+              <span id="quarter-point"></span>
+            </div>
+            <div class="omega-grid-item">
+              <span id="mid-point"></span>
+            </div>
+            <div class="omega-grid-item">
+              <span id="three-quarter-point"></span>
+            </div>
+            <div class="omega-grid-item"><span>Moment (kN.m)</span></div>
+            <div class="omega-grid-item">
+              <input type="number" id="quarter-point-moment" value="50" />
+            </div>
+            <div class="omega-grid-item">
+              <input type="number" id="mid-point-moment" value="150" />
+            </div>
+            <div class="omega-grid-item">
+              <input type="number" id="three-quarter-point-moment" value="50" />
+            </div>
+          </div>
+          <div class="omega-state">
+            <div id="omega-calculate"></div>
+            <span
+              >ω<sub>2</sub>
+              <input type="number" id="omega-the-input" value="1" />
+            </span>
+          </div>
+          <div class="omega-choice">
+            <label
+              ><input
+                id="omega-calculated"
+                type="radio"
+                name="omega-choice"
+                value="omega-calculated"
+                checked
+              />
+              ω<sub>2</sub> calc</label
+            >
+            <label
+              ><input
+                id="omega-input"
+                type="radio"
+                name="omega-choice"
+                value="omega-input"
+              />
+              ω<sub>2</sub> input</label
+            >
+          </div>
+        </div>
+
+        <div class="results-container grid-item">
+          <div class="heading">
+            <h2>Elements in Flexural Compression</h2>
+          </div>
+
+          <div id="results-bending-axis"></div>
+
+          <div id="results-strong-axis">
+            <div id="section-class"></div>
+
+            <div id="results"></div>
+            <div id="utilization"></div>
+          </div>
+        </div>
+      </div>
+      <div id="popupContainer" class="popup-container">
+        <div class="popup-content popup-grid">
+          <div class="popup-grid-item"><img id="qrCodeImage" src="qrtest.png" alt="QR Code" /></div>
+          <div class="popup-grid-item no-border"><button id="copyLinkBtn">Copy Link</button></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="beam_list.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
