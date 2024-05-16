@@ -10,9 +10,7 @@
   <body>
     <div class="main-container">
       <div class="main-heading">
-        <h1 id="popup">
-          LTB Moment<img src="ltb.jpg" />
-        </h1>
+        <h1 id="popup">LTB Moment<img src="ltb.jpg" /></h1>
       </div>
       <div class="grid-container">
         <div class="member-container grid-item">
@@ -64,22 +62,6 @@
               />
               Weak axis</label
             >
-          </div>
-          <div class="moment-resistance-input">
-            <div>
-              <h3>Factored Moment Resistance</h3>
-              <div>
-                <span
-                  >M<sub>r</sub>
-                  <input
-                    type="number"
-                    id="moment-resistance-input"
-                    value="100"
-                  />
-                  kN.m</span
-                >
-              </div>
-            </div>
           </div>
           <div class="yield-strength-input">
             <div>
@@ -224,8 +206,12 @@
       </div>
       <div id="popupContainer" class="popup-container">
         <div class="popup-content popup-grid">
-          <div class="popup-grid-item"><img id="qrCodeImage" src="qr.png" alt="QR Code" /></div>
-          <div class="popup-grid-item no-border"><button id="copyLinkBtn">Copy</button></div>
+          <div class="popup-grid-item">
+            <img id="qrCodeImage" src="qr.png" alt="QR Code" />
+          </div>
+          <div class="popup-grid-item no-border">
+            <button id="copyLinkBtn">Copy</button>
+          </div>
         </div>
       </div>
     </div>

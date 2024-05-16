@@ -124,11 +124,11 @@ const weakAxis = document
     calculate();
   });
 
-const momentResistance = document
-  .getElementById("moment-resistance-input")
-  .addEventListener("change", () => {
-    calculate();
-  });
+// const momentResistance = document
+//   .getElementById("moment-resistance-input")
+//   .addEventListener("change", () => {
+//     calculate();
+//   });
 
 const yieldStrengthInput = document
   .getElementById("yield-strength-input")
@@ -329,7 +329,6 @@ function calculate() {
   phiFlexure = 0.9;
   N = 1.34;
 
-  Mr = parseFloat(document.getElementById("moment-resistance-input").value);
   FY = parseFloat(document.getElementById("yield-strength-input").value);
   Lub = parseFloat(document.getElementById("unbraced-length-input").value);
   Mf = parseFloat(document.getElementById("max-factored-moment").value);
@@ -398,18 +397,21 @@ function calculate() {
       "section-class",
       `<h3>The flange is class :${flangeClass}, the web is class: ${webClass}, the overall section is class: ${sectionClass}</h3>`
     );
+    Mr = ((phiFlexure * FY * Sx)/1000).toFixed(0);
   } else if (flangeClass === "two" || webClass === "two") {
     sectionClass = "two";
     updateResults(
       "section-class",
       `<h3>The flange is class :${flangeClass}, the web is class: ${webClass}, the overall section is class: ${sectionClass}</h3>`
     );
+    Mr = ((phiFlexure * FY * Zx)/1000).toFixed(0);
   } else {
     sectionClass = "one";
     updateResults(
       "section-class",
       `<h3>The flange is class :${flangeClass}, the web is class: ${webClass}, the overall section is class: ${sectionClass}</h3>`
     );
+    Mr = ((phiFlexure * FY * Zx)/1000).toFixed(0);
   }
 
   Mu = parseFloat(
