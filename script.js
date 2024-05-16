@@ -8,6 +8,7 @@ function setDefault() {
   calculateOmegaTwo();
   updateOmegaTwoToUse("calc");
   calculate();
+  updateLu();
 }
 
 function createShapeMenu(container, data, key) {
@@ -34,6 +35,7 @@ function createShapeMenu(container, data, key) {
     // const selectedBeam = data[selectedIndex];
     createWshapeProperties(selectedIndex);
     calculate();
+    updateLu();
   });
 
   container.appendChild(select);
@@ -81,6 +83,7 @@ function updateBeampProp(index, notation, unit) {
   if (elementChildToRemove) {
     element.removeChild(elementChildToRemove);
   }
+
   const elementSpan = document.createElement("span");
   elementSpan.innerHTML = " " + beamDetails[index][notation] + ` ${unit}`;
 
@@ -123,12 +126,6 @@ const weakAxis = document
     createWshapeProperties(selectedBeamIndex);
     calculate();
   });
-
-// const momentResistance = document
-//   .getElementById("moment-resistance-input")
-//   .addEventListener("change", () => {
-//     calculate();
-//   });
 
 const yieldStrengthInput = document
   .getElementById("yield-strength-input")
@@ -270,9 +267,80 @@ function calculateOmegaTwo() {
   ).innerHTML = `ω<sub>2-calc</sub> = ${omegaTwo}`;
 }
 
+let sectionClass = "four";
+
 function updateResults(notation, result) {
   const element = document.querySelector(`#${notation}`);
   element.innerHTML = result;
+}
+
+function calculateMrprime(Lub, omegaTwoToUse, return_index) {
+  let Iy, J, Cw, Sx, Zx, FY, E, G;
+
+  Iy = selectedBeam.Iy;
+  J = selectedBeam.J;
+  Cw = selectedBeam.Cw;
+  Sx = selectedBeam.Sx;
+  Zx = selectedBeam.Zx;
+
+  FY = parseFloat(document.getElementById("yield-strength-input").value);
+
+  G = 77000;
+  E = 200000;
+
+  Mu = parseFloat(
+    (
+      (omegaTwoToUse *
+        ((Math.PI / Lub) *
+          Math.sqrt(
+            E * Iy * Math.pow(10, 6) * G * J * Math.pow(10, 3) +
+              Math.pow((Math.PI * E) / Lub, 2) *
+                Iy *
+                Math.pow(10, 6) *
+                Cw *
+                Math.pow(10, 9)
+          ))) /
+      1000000
+    ).toFixed(0)
+  );
+
+  if (return_index === 0) {
+    return Mu;
+  }
+  if (sectionClass === "one" || "two") {
+    Mp = parseFloat((Zx * FY) / 1000).toFixed(0);
+    mpLimit = (0.67 * Mp).toFixed(0);
+    if (Mu >= mpLimit) {
+      return (Mrprime = (1.15 * Mp * (1 - 0.28 * (Mp / Mu))).toFixed(0));
+    } else {
+      return (Mrprime = Mu.toFixed(0));
+    }
+  } else {
+    My = parseFloat((Sx * FY) / 1000).toFixed(0);
+    myLimit = (0.67 * My).toFixed(0);
+    if (Mu >= myLimit) {
+      return (Mrprime = (1.15 * My * (1 - 0.28 * (My / Mu))).toFixed(0));
+    } else {
+      return (Mrprime = Mu.toFixed(0));
+    }
+  }
+}
+
+function calculateMr() {
+  let Sx, Zx, FY;
+
+  Sx = selectedBeam.Sx;
+  Zx = selectedBeam.Zx;
+
+  FY = parseFloat(document.getElementById("yield-strength-input").value);
+
+  if (sectionClass === "one" || "two") {
+    return (Mr = ((FY * Zx) / 1000).toFixed(0));
+  } else if (sectionClass === "three") {
+    return (Mr = ((FY * Sx) / 1000).toFixed(0));
+  } else {
+    return;
+  }
 }
 
 function calculate() {
@@ -295,11 +363,6 @@ function calculate() {
     D,
     T,
     W,
-    Iy,
-    J,
-    Cw,
-    E,
-    G,
     Sx,
     Zx,
     phiFlexure,
@@ -315,16 +378,11 @@ function calculate() {
     myLimit,
     utilizationRatio;
 
-  Iy = selectedBeam.Iy;
-  J = selectedBeam.J;
-  Cw = selectedBeam.Cw;
   T = selectedBeam.T;
   W = selectedBeam.W;
   B = selectedBeam.B;
   Sx = selectedBeam.Sx;
   Zx = selectedBeam.Zx;
-  G = 77000;
-  E = 200000;
 
   phiFlexure = 0.9;
   N = 1.34;
@@ -337,7 +395,6 @@ function calculate() {
 
   let flangeClass = "four";
   let webClass = "four";
-  let sectionClass = "four";
 
   let sqrtFY = Math.sqrt(FY);
 
@@ -397,38 +454,24 @@ function calculate() {
       "section-class",
       `<h3>The flange is class :${flangeClass}, the web is class: ${webClass}, the overall section is class: ${sectionClass}</h3>`
     );
-    Mr = ((phiFlexure * FY * Sx)/1000).toFixed(0);
+    Mr = (phiFlexure * calculateMr()).toFixed(0);
   } else if (flangeClass === "two" || webClass === "two") {
     sectionClass = "two";
     updateResults(
       "section-class",
       `<h3>The flange is class :${flangeClass}, the web is class: ${webClass}, the overall section is class: ${sectionClass}</h3>`
     );
-    Mr = ((phiFlexure * FY * Zx)/1000).toFixed(0);
+    Mr = (phiFlexure * calculateMr()).toFixed(0);
   } else {
     sectionClass = "one";
     updateResults(
       "section-class",
       `<h3>The flange is class :${flangeClass}, the web is class: ${webClass}, the overall section is class: ${sectionClass}</h3>`
     );
-    Mr = ((phiFlexure * FY * Zx)/1000).toFixed(0);
+    Mr = (phiFlexure * calculateMr()).toFixed(0);
   }
 
-  Mu = parseFloat(
-    (
-      (omegaTwoToUse *
-        ((Math.PI / Lub) *
-          Math.sqrt(
-            E * Iy * Math.pow(10, 6) * G * J * Math.pow(10, 3) +
-              Math.pow((Math.PI * E) / Lub, 2) *
-                Iy *
-                Math.pow(10, 6) *
-                Cw *
-                Math.pow(10, 9)
-          ))) /
-      1000000
-    ).toFixed(0)
-  );
+  Mu = calculateMrprime(Lub, omegaTwoToUse, 0);
 
   console.log(
     "Mu:",
@@ -441,10 +484,8 @@ function calculate() {
     Mp = parseFloat((Zx * FY) / 1000).toFixed(0);
     mpLimit = (0.67 * Mp).toFixed(0);
 
-    console.log("Mp class 1 2", Mp);
     if (Mu >= mpLimit) {
       Mrprime = (1.15 * phiFlexure * Mp * (1 - 0.28 * (Mp / Mu))).toFixed(0);
-      console.log("Mrprime class 1 2", Mrprime);
       if (Mrprime < Mr) {
         Mrfinal = Mrprime;
         updateResults(
@@ -460,7 +501,6 @@ function calculate() {
       }
     } else {
       Mrprime = (phiFlexure * Mu).toFixed(0);
-      console.log("Mrprime", Mrprime);
       if (Mrprime < Mr) {
         Mrfinal = Mrprime;
         updateResults(
@@ -478,10 +518,8 @@ function calculate() {
   } else {
     My = parseFloat((Sx * FY) / 1000).toFixed(0);
     myLimit = (0.67 * My).toFixed(0);
-    console.log("My class 3", My);
     if (Mu >= myLimit) {
       Mrprime = (1.15 * phiFlexure * My * (1 - 0.28 * (My / Mu))).toFixed(0);
-      console.log("Mrprime class 3", Mrprime);
       if (Mrprime < Mr) {
         Mrfinal = Mrprime;
         updateResults(
@@ -497,7 +535,6 @@ function calculate() {
       }
     } else {
       Mrprime = phiFlexure * Mu;
-      console.log("Mrprime", Mrprime);
       if (Mrprime < Mr) {
         Mrfinal = Mrprime;
         updateResults(
@@ -529,6 +566,32 @@ function calculate() {
   }
 }
 
+function findDifference(Lub) {
+  let Mrprime = calculateMrprime(Lub, 1.0, 1);
+  return Mrprime - Mr;
+}
+
+function findLU(a, b) {
+  const tolerance = 0.01;
+
+  let iteration = 0;
+
+  while ((b - a) / 2 > tolerance && iteration < 1000) {
+    let c = (a + b) / 2;
+    if (findDifference(c) === 0) return c;
+    if (findDifference(c) * findDifference(a) < 0) b = c;
+    else a = c;
+    iteration++;
+  }
+  return (a + b) / 2;
+}
+
+function updateLu() {
+  let Lu;
+  Lu = parseFloat(findLU(0, 10000).toFixed(0));
+  updateResults("Lu", `<span>L<sub>u</sub> </span> = ${Lu} mm`);
+}
+
 function managePopUp() {
   const headerLink = document.getElementById("popup");
   const popupContainer = document.getElementById("popupContainer");
@@ -537,7 +600,6 @@ function managePopUp() {
   // Function to open the popup
   headerLink.addEventListener("click", function (event) {
     event.preventDefault();
-    console.log("clicked");
     setTimeout(() => {
       popupContainer.style.display = "block";
     }, 150);
