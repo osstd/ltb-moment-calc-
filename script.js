@@ -6,7 +6,7 @@ function setDefault() {
   updateBendingAxis("strong");
   createWshapeProperties(0);
   calculateOmegaTwo();
-  updateOmegaTwoToUse("calc");
+  updateOmegaTwoToUse("input");
   calculate();
   updateLu();
 }
@@ -115,7 +115,6 @@ const strongAxis = document
   .addEventListener("change", () => {
     updateBendingAxis("strong");
     createWshapeProperties(selectedBeamIndex);
-
     calculate();
   });
 
@@ -150,34 +149,38 @@ const quarterPointMomentInput = document
   .getElementById("quarter-point-moment")
   .addEventListener("change", () => {
     calculateOmegaTwo();
-    calculate();
   });
 
 const midPointMomentInput = document
   .getElementById("mid-point-moment")
   .addEventListener("change", () => {
     calculateOmegaTwo();
-    calculate();
   });
+
 const threeQuarterPointMomentInput = document
   .getElementById("three-quarter-point-moment")
   .addEventListener("change", () => {
     calculateOmegaTwo();
-    calculate();
+  });
+
+const omegaInputValue = document
+  .getElementById("omega-the-input")
+  .addEventListener("change", () => {
+    updateInputOmegaTwo();
   });
 
 const omegaCalculatedChoice = document
   .getElementById("omega-calculated")
   .addEventListener("change", () => {
     updateOmegaTwoToUse("calc");
-    calculate();
+    calculateOmegaTwo();
   });
 
 const omegaInputChoice = document
   .getElementById("omega-input")
   .addEventListener("change", () => {
     updateOmegaTwoToUse("input");
-    calculate();
+    updateInputOmegaTwo();
   });
 
 let selectedBeam = beamDetails[0];
@@ -187,7 +190,7 @@ function updateSelectedBeam(index) {
   selectedBeamIndex = index;
   selectedBeam = beamDetails[index];
 
-  console.log("current selected beam:", selectedBeam, "index:", index);
+  console.log("currentSelectedBeam:", selectedBeam, "index:", index);
 }
 
 let bendingAxis = "strong";
@@ -209,27 +212,46 @@ function updateYieldStrength(yield) {
 
 let omegaTwo = 1.34;
 let omegaTwoInput = 1;
-let omegaTwoToUse = omegaTwo;
+let omegaTwoToUse = omegaTwoInput;
+let omegaMode = "input";
 
 function updateOmegaTwoInput(omega) {
   omegaTwoInput = omega;
 }
 
 function updateOmegaTwoToUse(use) {
-  console.log("current use:", use);
+  console.log("omegaMode:", use);
   if (use === "calc") {
     omegaTwoToUse = omegaTwo;
-    console.log("current omega calculated:", omegaTwoToUse);
+
+    omegaMode = "calc";
+
+    console.log("currentOmegaCalculated:", omegaTwoToUse);
+    updateResults("omega-in-use", `ω<sub>2</sub>: ${omegaTwoToUse}`);
   } else {
-    omegaTwoInput = parseFloat(
-      document.getElementById("omega-the-input").value
-    );
-    if (omegaTwoInput > 2.5) {
-      omegaTwoToUse = 2.5;
-    } else {
-      omegaTwoToUse = omegaTwoInput;
-    }
-    console.log("current omega input:", omegaTwoToUse);
+    omegaMode = "input";
+
+    console.log("currentOmegaInput:", omegaTwoToUse);
+    updateResults("omega-in-use", `ω<sub>2</sub>: ${omegaTwoToUse}`);
+  }
+  calculate();
+}
+
+function updateInputOmegaTwo() {
+  let omegaTwoInputUse;
+
+  omegaTwoInput = parseFloat(document.getElementById("omega-the-input").value);
+
+  if (omegaTwoInput > 2.5) {
+    omegaTwoInputUse = 2.5;
+  } else {
+    omegaTwoInputUse = omegaTwoInput;
+  }
+
+  if (omegaMode === "input") {
+    updateResults("omega-in-use", `ω<sub>2</sub>: ${omegaTwoInputUse}`);
+    omegaTwoToUse = omegaTwoInputUse;
+    calculate();
   }
 }
 
@@ -265,6 +287,12 @@ function calculateOmegaTwo() {
   document.getElementById(
     "omega-calculate"
   ).innerHTML = `ω<sub>2-calc</sub> = ${omegaTwo}`;
+
+  if (omegaMode === "calc") {
+    updateResults("omega-in-use", `ω<sub>2</sub>: ${omegaTwo}`);
+    omegaTwoToUse = omegaTwo;
+    calculate();
+  }
 }
 
 let sectionClass = "four";
@@ -357,7 +385,7 @@ function calculate() {
 
   //   Class check
 
-  console.log("during calculate selectedBeam:", selectedBeam);
+  console.log("duringCalculateselectedBeam:", selectedBeam);
 
   let B,
     D,
@@ -473,10 +501,13 @@ function calculate() {
 
   Mu = calculateMrprime(Lub, omegaTwoToUse, 0);
 
+  console.log("omegaTwoToUseInCalc:", omegaTwoToUse);
+
   console.log(
-    "Mu:",
-    Mu / omegaTwoToUse,
-    (omegaTwoToUse * Mu).toFixed(0),
+    "Mu(1.0): ",
+    (Mu / omegaTwoToUse).toFixed(0),
+    "Mu(w2): ",
+    Mu.toFixed(0),
     typeof Mu
   );
 

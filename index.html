@@ -175,23 +175,33 @@
           <div class="omega-choice">
             <label
               ><input
-                id="omega-calculated"
-                type="radio"
-                name="omega-choice"
-                value="omega-calculated"
-                checked
-              />
-              ω<sub>2</sub> calc</label
-            >
-            <label
-              ><input
                 id="omega-input"
                 type="radio"
                 name="omega-choice"
                 value="omega-input"
+                checked
               />
               ω<sub>2</sub> input</label
             >
+            <label
+              ><input
+                id="omega-calculated"
+                type="radio"
+                name="omega-choice"
+                value="omega-calculated"
+              />
+              ω<sub>2</sub> calc</label
+            >
+          </div>
+          <div>
+            <span
+              >Input the unbraced length of the beam (L<sub>ub</sub>) and the
+              maximum factored moment (M<sub>f-max</sub>). To account for the
+              shape of the bending moment the target points are calculated
+              readily based on the unbraced length. Input the factored moment at
+              the corresponding points [L<sub>1/4</sub>, L<sub>1/2</sub>,
+              L<sub>3/4</sub>].
+            </span>
           </div>
         </div>
 
@@ -204,7 +214,7 @@
 
           <div id="results-strong-axis">
             <div id="section-class"></div>
-
+            <div id="omega-in-use"></div>
             <div id="results"></div>
             <div id="utilization"></div>
           </div>
